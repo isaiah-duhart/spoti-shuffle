@@ -68,10 +68,9 @@ const useProfileData = () => {
 					}
 
                     window.sessionStorage.setItem('loggedIn', "true")
-                    console.log(document.cookie)
-
 					window.location.assign(loginJson.location)
 				}
+
                 if (ignore) {
                     return
                 }
@@ -86,8 +85,6 @@ const useProfileData = () => {
                 if (profileResult === null){
                     throw new Error('Failed to fetch profile')
                 }
-
-                console.log(profileResult)
 
 				const profileJson = await profileResult.json()
 
@@ -106,6 +103,7 @@ const useProfileData = () => {
 
 		fetchData()
 
+        // TODO look into using abort controller instead of this bool so i can get rid of all these ugly checks
 		return () => {
 			ignore = true
 		}
