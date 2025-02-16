@@ -1,7 +1,6 @@
 import App from "./App";
-import Profile from "./Profile";
-import ErrorPage from "./ErrorPage";
-import { element } from "prop-types";
+import Profile from "./sections/Profile/Profile";
+import ErrorPage from "./sections/ErrorPage/ErrorPage";
 
 const routes = [
   {
