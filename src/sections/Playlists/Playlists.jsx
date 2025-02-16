@@ -1,4 +1,6 @@
+import styles from './PlaylistsStyles.module.css'
 import { usePlaylists } from '../../common/apiCalls'
+import PlaylistCard from './PlaylistCard'
 
 export default function Playlists() {
 	const { playlists, error, loading } = usePlaylists()
@@ -9,8 +11,8 @@ export default function Playlists() {
     console.log(playlists)
 
 	return playlists && (
-        <div className="container">
-            <p>{playlists.total}</p>
+        <div className={styles.container}>
+            {playlists.items.map(playlist => {return <PlaylistCard key={playlist.id} playlist={playlist} />})}
         </div>
     )
 }
