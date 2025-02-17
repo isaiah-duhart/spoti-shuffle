@@ -2,8 +2,11 @@ import styles from './ProfileStyles.module.css'
 import { useLogin } from '../../common/apiCalls'
 import Playlists from '../Playlists/Playlists'
 import PlaylistDetails from '../PlaylistDetails/PlaylistDetails'
+import { useState } from 'react'
 
 export default function Profile() {
+	const [activePlaylistId, setActivePlaylistId] = useState(null)
+	
 	const { profile, error, loading } = useLogin()
 
 	if (loading) return <p>Loading...</p>
@@ -12,9 +15,6 @@ export default function Profile() {
 	const viewSpotifyProfile = () => {
 		window.open(profile.external_urls.spotify, '_blank')
 	}
-
-	// define state here? to share which playlist is clicked from
-	// Playlists to PlaylistDetail
 
 	return (
 		profile && (
@@ -32,10 +32,10 @@ export default function Profile() {
 					</nav>
 				</header>
 				<div className={styles.playlistsContainer}>
-					<Playlists />
+					<Playlists updatePlaylist={setActivePlaylistId}/>
 				</div>
 				<div className={styles.playlistDetailContainer}>
-					<PlaylistDetails />
+					<PlaylistDetails playlistId={activePlaylistId}/>
 				</div>
 			</div>
 		)

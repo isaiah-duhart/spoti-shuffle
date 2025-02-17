@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+const apiUrl = 'http://localhost:8000'
+
 function delay(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -24,33 +26,12 @@ export const useLogin = () => {
 	useEffect(() => {
 		let ignore = false
 
-		async function profileCached() {
-			const cachedProfile = window.sessionStorage.getItem('profile')
-			let cached = false
-			try {
-				// TODO look into: I've seen this both ways (null and 'null') - not sure why
-				if (cachedProfile !== 'null' && cachedProfile !== null && !ignore) {
-					const profileObj = await JSON.parse(cachedProfile)
-					setProfile(profileObj)
-					setLoading(false)
-					cached = true
-				}
-			} catch (error) {
-				setError(error)
-			} finally {
-				return cached
-			}
-		}
-
 		async function fetchData() {
-			if (await profileCached()) {
-				return
-			}
 			try {
 				const loggedIn = window.sessionStorage.getItem('loggedIn')
 				// TODO look into: I've seen this both ways - not sure why
 				if (loggedIn === null || loggedIn === 'null') {
-					const loginResult = await fetch('http://localhost:8000/api/login', {
+					const loginResult = await fetch(`${apiUrl}/api/login`, {
 						method: 'GET',
 						mode: 'cors',
 						credentials: 'include',
@@ -58,7 +39,7 @@ export const useLogin = () => {
 
 					if (!loginResult.ok) {
 						throw new Error(
-							`getAccessToken: HTTP Error: Status ${loginResult.status}`
+							`login: HTTP Error: Status ${loginResult.status}`
 						)
 					}
 					const loginJson = await loginResult.json()
@@ -73,7 +54,7 @@ export const useLogin = () => {
 
 				// Need to wait for spotifty api callback to backend (for access token) to getProfile, try a couple of times
 				const profileResult = await retryFetch(
-					'http://localhost:8000/api/profile',
+					`${apiUrl}/api/profile`,
 					{
 						method: 'GET',
 						mode: 'cors',
@@ -120,14 +101,11 @@ export const usePlaylists = () => {
 		let ignore = false
 		async function fetchPlaylists() {
 			try {
-				const playlistsResult = await fetch(
-					'http://localhost:8000/api/playlists',
-					{
-						method: 'GET',
-						mode: 'cors',
-						credentials: 'include',
-					}
-				)
+				const playlistsResult = await fetch(`${apiUrl}/api/playlists`, {
+					method: 'GET',
+					mode: 'cors',
+					credentials: 'include',
+				})
 
 				if (!playlistsResult.ok) {
 					throw new Error('Failed to fetch playlists')
@@ -137,7 +115,7 @@ export const usePlaylists = () => {
 
 				if (ignore) return
 
-                setPlaylists(playlistJson)
+				setPlaylists(playlistJson)
 			} catch (error) {
 				setError(error)
 			} finally {
@@ -150,5 +128,50 @@ export const usePlaylists = () => {
 		return () => (ignore = true)
 	}, [])
 
-    return { playlists, error, loading}
+	return { playlists, error, loading }
+}
+
+export const usePlaylistDetails = (playlistId) => {
+	const [playlistDetails, setPlaylistDetails] = useState(null)
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState(null)
+
+	useEffect(() => {
+		let ignore = false
+		async function fetchPlaylistDetails() {
+			try {
+				// TODO should we display error here?
+				if (playlistId == null) return
+
+				const playlistDetailsResult = await fetch(
+					`${apiUrl}/api/playlist?playlistId=${playlistId}`,
+					{
+						method: 'GET',
+						mode: 'cors',
+						credentials: 'include',
+					}
+				)
+
+				if (!playlistDetailsResult.ok) {
+					throw new Error('Failed to fetch playlist details')
+				}
+
+				const playlistDetails = await playlistDetailsResult.json()
+
+				if (ignore) return
+
+				setPlaylistDetails(playlistDetails)
+			} catch (error) {
+				setError(error)
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		fetchPlaylistDetails()
+
+		return () => (ignore = true)
+	}, [playlistId])
+
+	return { playlistDetails, loading, error }
 }

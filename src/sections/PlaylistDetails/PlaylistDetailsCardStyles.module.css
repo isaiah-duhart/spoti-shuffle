@@ -1,20 +1,17 @@
-.playlistCard {
-    background-color: inherit;
+.playlistDetailsCard {
     border-radius: 6px;
     flex-shrink: 1;
     display: flex;
     align-items: center;
-    padding: 5px;
     gap: 12px;
-    padding: 8px;
-    img {
+    .trackImage {
         align-self: center;
         border-radius: 6px;
         height: 60px;
         width: 60px;
         flex-shrink: 1;
     }
-    .playlistDetails{
+    .trackNameAndArtist{
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -24,16 +21,16 @@
             margin: 0;
         }
 
-        .playlistName {
+        .trackName {
             font-weight: 500;
         }
 
-        .playlistOwner {
+        .trackArtists {
             color: grey;
         }
     }
 }
 
-.playlistCard:hover {
+.playlistDetailsCard:hover {
     background-color: #383737;
 }
