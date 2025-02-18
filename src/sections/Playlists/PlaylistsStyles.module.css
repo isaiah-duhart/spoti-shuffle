@@ -1,0 +1,7 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 1rem;
+    overflow-y: scroll;
+    height: 90vh;
+}
